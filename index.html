@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Portale Accesso</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:    #0f0e0d;
+      --paper:  #f5f0e8;
+      --cream:  #ede7d9;
+      --accent: #b84a2e;
+      --muted:  #7a7267;
+      --border: #c8bfb0;
+      --shadow: rgba(15,14,13,0.12);
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* decorative background */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 10% 20%, #d9cfc0 0%, transparent 60%),
+        radial-gradient(ellipse 60% 80% at 90% 80%, #c9b99a 0%, transparent 55%);
+      z-index: 0;
+    }
+
+    .grain {
+      position: fixed; inset: 0; z-index: 1;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; opacity: .5;
+    }
+
+    .card {
+      position: relative; z-index: 2;
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 52px 48px 44px;
+      width: 420px;
+      box-shadow: 0 8px 40px var(--shadow), 0 1px 0 #fff inset;
+      animation: rise .5s cubic-bezier(.22,1,.36,1) both;
+    }
+
+    @keyframes rise {
+      from { opacity:0; transform:translateY(18px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    .logo-row {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 32px;
+    }
+
+    .logo-mark {
+      width: 32px; height: 32px;
+      background: var(--accent);
+      border-radius: 2px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .logo-mark svg { width:16px; height:16px; fill:#fff; }
+
+    .logo-text {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.1rem;
+      letter-spacing: .01em;
+    }
+
+    h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.85rem;
+      line-height: 1.15;
+      margin-bottom: 6px;
+    }
+    h1 em { font-style: italic; color: var(--accent); }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: .88rem;
+      font-weight: 300;
+      margin-bottom: 32px;
+    }
+
+    .field {
+      margin-bottom: 18px;
+    }
+    label {
+      display: block;
+      font-size: .75rem;
+      font-weight: 500;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    input {
+      width: 100%;
+      padding: 11px 14px;
+      background: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .95rem;
+      color: var(--ink);
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(184,74,46,.12);
+    }
+
+    .btn {
+      width: 100%;
+      margin-top: 8px;
+      padding: 13px;
+      background: var(--ink);
+      color: var(--paper);
+      border: none; border-radius: 2px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .9rem;
+      font-weight: 500;
+      letter-spacing: .04em;
+      cursor: pointer;
+      transition: background .2s, transform .1s;
+      position: relative; overflow: hidden;
+    }
+    .btn:hover  { background: #2a2826; }
+    .btn:active { transform: scale(.98); }
+    .btn:disabled { opacity:.6; cursor:not-allowed; }
+
+    .btn-spinner {
+      display: none;
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      margin: 0 auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 24px 0;
+      color: var(--muted); font-size: .8rem;
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    .btn-register {
+      width: 100%;
+      padding: 12px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .9rem;
+      color: var(--ink);
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+    }
+    .btn-register:hover { background: var(--cream); border-color: var(--ink); }
+
+    .msg {
+      margin-top: 16px;
+      padding: 10px 14px;
+      border-radius: 2px;
+      font-size: .85rem;
+      display: none;
+    }
+    .msg.ok  { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; display:block; }
+    .msg.err { background: #fdecea; color: #b71c1c; border: 1px solid #ef9a9a; display:block; }
+
+    /* ── DASHBOARD ── */
+    .dashboard { display: none; }
+    .dash-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 28px;
+    }
+    .dash-header h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.5rem;
+    }
+    .btn-logout {
+      padding: 7px 16px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      font-size: .82rem;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: background .2s;
+    }
+    .btn-logout:hover { background: var(--cream); }
+
+    .welcome-badge {
+      background: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 14px 18px;
+      margin-bottom: 24px;
+      font-size: .9rem;
+    }
+    .welcome-badge strong { color: var(--accent); }
+
+    .log-title {
+      font-size: .75rem;
+      font-weight: 500;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .log-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .83rem;
+    }
+    .log-table th {
+      text-align: left;
+      padding: 7px 10px;
+      background: var(--cream);
+      border: 1px solid var(--border);
+      font-weight: 500;
+      color: var(--muted);
+      font-size: .75rem;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+    .log-table td {
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      color: var(--ink);
+    }
+    .log-table tr:nth-child(even) td { background: var(--cream); }
+
+    .status-ok  { color: #2e7d32; font-weight: 500; }
+    .status-err { color: #b71c1c; font-weight: 500; }
+
+    .empty-logs {
+      text-align: center; color: var(--muted);
+      padding: 24px; font-size: .88rem;
+    }
+  </style>
+</head>
+<body>
+<div class="grain"></div>
+
+<div class="card" id="app">
+
+  <!-- ── LOGIN FORM ── -->
+  <div id="login-view">
+    <div class="logo-row">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      <span class="logo-text">Portale</span>
+    </div>
+
+    <h1>Bentornato<br><em>accedi</em> al portale.</h1>
+    <p class="subtitle">Inserisci le tue credenziali per continuare</p>
+
+    <div class="field">
+      <label for="email">Email</label>
+      <input type="email" id="email" placeholder="nome@esempio.com" autocomplete="username"/>
+    </div>
+    <div class="field">
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="••••••••" autocomplete="current-password"/>
+    </div>
+
+    <button class="btn" id="btn-login" onclick="doLogin()">
+      <span id="btn-login-text">Accedi</span>
+      <div class="btn-spinner" id="login-spinner"></div>
+    </button>
+
+    <div class="divider">oppure</div>
+
+    <button class="btn-register" onclick="doRegister()">Registra nuovo account</button>
+
+    <div class="msg" id="msg"></div>
+  </div>
+
+  <!-- ── DASHBOARD ── -->
+  <div id="dashboard-view" class="dashboard">
+    <div class="dash-header">
+      <h2>Log Accessi</h2>
+      <button class="btn-logout" onclick="doLogout()">Esci</button>
+    </div>
+    <div class="welcome-badge" id="welcome-badge"></div>
+    <div class="log-title">Ultimi accessi registrati</div>
+    <div id="log-container"></div>
+  </div>
+
+</div>
+
+<!-- ── Supabase SDK ── -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  // ══════════════════════════════════════════
+  //  ⚙️  CONFIGURAZIONE — modifica questi due valori
+  //      Vedi la guida PDF per dove trovarli
+  // ══════════════════════════════════════════
+const SUPABASE_URL = 'https://tvnnzkekendtswgatpge.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_ASVJFIMJ8oeCXDY1S7CyaQ_t2Q0dvOH';  // ══════════════════════════════════════════
+
+  const { createClient } = supabase;
+  const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  /* ── helpers UI ── */
+  function showMsg(text, type) {
+    const el = document.getElementById('msg');
+    el.textContent = text;
+    el.className = 'msg ' + type;
+  }
+  function setLoading(on) {
+    const btn = document.getElementById('btn-login');
+    document.getElementById('btn-login-text').style.display = on ? 'none' : '';
+    document.getElementById('login-spinner').style.display  = on ? 'block' : 'none';
+    btn.disabled = on;
+  }
+  function getIP() {
+    return fetch('https://api.ipify.org?format=json')
+      .then(r => r.json()).then(d => d.ip).catch(() => 'n/d');
+  }
+
+  /* ── log accesso su Supabase ── */
+  async function logAccess(userId, email, status, note) {
+    const ip = await getIP();
+    await sb.from('access_logs').insert({
+      user_id:  userId,
+      email:    email,
+      status:   status,
+      note:     note,
+      ip:       ip,
+      user_agent: navigator.userAgent.substring(0, 200)
+    });
+  }
+
+  /* ── LOGIN ── */
+  async function doLogin() {
+    const email    = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    if (!email || !password) { showMsg('Compila tutti i campi.', 'err'); return; }
+
+    setLoading(true);
+    const { data, error } = await sb.auth.signInWithPassword({ email, password });
+    setLoading(false);
+
+    if (error) {
+      showMsg('Credenziali non valide. Riprova.', 'err');
+      await logAccess(null, email, 'FALLITO', error.message);
+    } else {
+      await logAccess(data.user.id, email, 'OK', 'Login riuscito');
+      showDashboard(data.user);
+    }
+  }
+
+  /* ── REGISTRAZIONE ── */
+  async function doRegister() {
+    const email    = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    if (!email || !password) { showMsg('Compila email e password per registrarti.', 'err'); return; }
+    if (password.length < 6) { showMsg('La password deve essere di almeno 6 caratteri.', 'err'); return; }
+
+    setLoading(true);
+    const { data, error } = await sb.auth.signUp({ email, password });
+    setLoading(false);
+
+    if (error) {
+      showMsg('Errore registrazione: ' + error.message, 'err');
+    } else {
+      await logAccess(data.user?.id, email, 'REGISTRAZIONE', 'Nuovo utente');
+      showMsg('✓ Account creato! Controlla la tua email per confermare.', 'ok');
+    }
+  }
+
+  /* ── LOGOUT ── */
+  async function doLogout() {
+    await sb.auth.signOut();
+    document.getElementById('login-view').style.display = '';
+    document.getElementById('dashboard-view').style.display = 'none';
+    document.getElementById('password').value = '';
+  }
+
+  /* ── DASHBOARD ── */
+  async function showDashboard(user) {
+    document.getElementById('login-view').style.display = 'none';
+    document.getElementById('dashboard-view').style.display = 'block';
+
+    const badge = document.getElementById('welcome-badge');
+    badge.innerHTML = `Accesso effettuato come <strong>${user.email}</strong>`;
+
+    const { data: logs } = await sb
+      .from('access_logs')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(20);
+
+    const container = document.getElementById('log-container');
+    if (!logs || logs.length === 0) {
+      container.innerHTML = '<div class="empty-logs">Nessun log disponibile.</div>';
+      return;
+    }
+
+    const rows = logs.map(l => {
+      const dt = new Date(l.created_at).toLocaleString('it-IT');
+      const cls = l.status === 'OK' ? 'status-ok' : (l.status === 'FALLITO' ? 'status-err' : '');
+      return `<tr>
+        <td>${dt}</td>
+        <td>${l.email || '—'}</td>
+        <td class="${cls}">${l.status}</td>
+        <td>${l.ip || '—'}</td>
+      </tr>`;
+    }).join('');
+
+    container.innerHTML = `
+      <table class="log-table">
+        <thead><tr><th>Data/Ora</th><th>Email</th><th>Esito</th><th>IP</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+  }
+
+  /* ── Auto-login se sessione attiva ── */
+  sb.auth.getSession().then(({ data: { session } }) => {
+    if (session) showDashboard(session.user);
+  });
+
+  /* ── Enter per submit ── */
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') doLogin();
+  });
+</script>
+</body>
+</html>
